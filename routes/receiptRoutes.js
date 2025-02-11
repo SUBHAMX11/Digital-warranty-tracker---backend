@@ -12,12 +12,7 @@ const upload = require('../middleware/multerConfig');
 const router = express.Router();
 
 router.post('/upload', authMiddleware, upload.single('receiptImage'), uploadReceipt);
-router.get('/all', authMiddleware, async (req, res, next) => {
-    if (req.user.role !== 'admin') {
-        return res.status(403).json({ msg: "❌ Access Denied: Admins Only!" });
-    }
-    next();
-}, getAllReceipts);
+router.get('/all', authMiddleware,  getAllReceipts);
 router.get('/:receiptId', authMiddleware, getReceiptById);
 router.put('/update/:receiptId', authMiddleware, async (req, res, next) => {
     const receipt = await getReceiptById(req.params.receiptId);
@@ -26,12 +21,6 @@ router.put('/update/:receiptId', authMiddleware, async (req, res, next) => {
     }
     next();
 }, updateReceiptDetails);
-router.delete('/delete/:receiptId', authMiddleware, async (req, res, next) => {
-    const receipt = await getReceiptById(req.params.receiptId);
-    if (!receipt || receipt.user.toString() !== req.user.id) {
-        return res.status(403).json({ msg: "❌ Unauthorized: You can't delete this receipt!" });
-    }
-    next();
-}, deleteReceipt);
+router.delete('/delete/:receiptId', authMiddleware, deleteReceipt);
 
 module.exports = router;
